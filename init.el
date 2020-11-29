@@ -13,10 +13,19 @@
 (package-initialize)
 
 
+;;
+(setq package-check-signature nil)
+
 ;; If there are no archived package contents, refresh them
 (when (not package-archive-contents)
   (package-refresh-contents))
 
+
+;; Quicklisp configuration
+(load (expand-file-name "~/quicklisp/slime-helper.el"))
+
+;; Lisp Slime
+(setq inferior-lisp-program "sbcl")
 
 ;; Enable elpy
 (elpy-enable)
@@ -27,6 +36,9 @@
   (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
   (add-hook 'elpy-mode-hook 'flycheck-mode))
 (global-flycheck-mode);; start flycheck on any language
+(require 'flycheck-pyflakes)
+(add-hook 'python-mode-hook 'flycheck-mode)
+(add-to-list 'flycheck-disabled-checkers 'python-flake8)
 
 
 ;; Enable autopep8
@@ -38,6 +50,17 @@
 (global-set-key (kbd "C-x g") 'magit-status)
 
 
+;; Prolog mode 
+(load "prolog.el")
+(autoload 'run-prolog "prolog" "Start a Prolog sub-process." t)
+(autoload 'prolog-mode "prolog" "Major mode for editing Prolog programs." t)
+(autoload 'mercury-mode "prolog" "Major mode for editing Mercury programs." t)
+(setq prolog-system 'swi)
+(setq auto-mode-alist (append '(("\\.pl$" . prolog-mode)
+                                ("\\.m$" . mercury-mode))
+                               auto-mode-alist))
+;; Bind ediprolog to f10
+(global-set-key [f10] 'ediprolog-dwim)
 
 
 
@@ -73,7 +96,6 @@
 (setq-default indent-tabs-mode nil)
 
 
-
 ;; init.el ends here
 
 (custom-set-faces
@@ -90,4 +112,4 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (flycheck jedi yafolding py-autopep8 material-theme magit macrostep jdee elpy better-defaults))))
+    (ediprolog slime flycheck-pyflakes flycheck jedi yafolding py-autopep8 material-theme magit macrostep jdee elpy better-defaults))))
